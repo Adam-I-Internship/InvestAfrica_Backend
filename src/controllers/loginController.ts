@@ -5,39 +5,43 @@ import { LoginType } from '../types/loginTypes';
 
 const prisma = new PrismaClient();
 
-enum AccountType {
-  User = 'User',
-  Company = 'Company',
-}
+const findAccountByEmail = async (email: string) => {
+  const userAccount = await prisma.user.findUnique({
+    where: { email },
+  });
 
-const checkAccountType = async (data: LoginType) => {
-  const account = await prisma.user.findUnique({
-    where: { email: data.email },
-  });
-  if (account) {
-      return account;
+  if (userAccount) {
+    return { account: userAccount, type: 'User' };
   }
-  const account2 = await prisma.company.findUnique({
-    where: { email: data.email },
+
+  const companyAccount = await prisma.company.findUnique({
+    where: { email },
   });
-  if (account2){
-    return account2;
+
+  if (companyAccount) {
+    return { account: companyAccount, type: 'Company' };
   }
+
   return null;
 };
 
 const loginAccount = async (req: Request, res: Response) => {
   try {
-    const data = { ...req.body };
-    const account = await checkAccountType(data);
-    if (account == null) {
+    const { email, accountPassword }: LoginType = req.body;
+    const accountData = await findAccountByEmail(email);
+
+    if (!accountData) {
       return res.status(400).json({ message: 'Cannot find account' });
     }
-    
-    if (await bcrypt.compare(data.accountPassword, account.accountPassword)) {
-      return res.status(200).json({ message: 'Account authenticated.' });
+
+    const { account, type } = accountData;
+    const isPasswordValid = await bcrypt.compare(accountPassword, account.accountPassword);
+
+    if (isPasswordValid) {
+      return res.status(200).json({ message: 'Account authenticated.', accountType: type });
+    } else {
+      return res.status(401).json({ message: 'Account cannot be authenticated.' });
     }
-    return res.status(401).json({ message: 'Account cannot be authenticated.' });
   } catch (error) {
     return res.status(500).json({ error: 'Login Failed. Please try again later.' });
   }
