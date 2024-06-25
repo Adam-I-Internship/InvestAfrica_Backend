@@ -11,7 +11,7 @@ const findAccountByEmail = async (email: string) => {
   });
 
   if (userAccount) {
-    return { account: userAccount, type: 'User' };
+    return userAccount;
   }
 
   const companyAccount = await prisma.company.findUnique({
@@ -19,7 +19,7 @@ const findAccountByEmail = async (email: string) => {
   });
 
   if (companyAccount) {
-    return { account: companyAccount, type: 'Company' };
+    return companyAccount;
   }
 
   return null;
@@ -28,21 +28,21 @@ const findAccountByEmail = async (email: string) => {
 const loginAccount = async (req: Request, res: Response) => {
   try {
     const { email, accountPassword }: LoginType = req.body;
-    const accountData = await findAccountByEmail(email);
+    const account = await findAccountByEmail(email);
 
-    if (!accountData) {
+    if (!account) {
       return res.status(400).json({ message: 'Cannot find account' });
     }
 
-    const { account, type } = accountData;
     const isPasswordValid = await bcrypt.compare(accountPassword, account.accountPassword);
 
     if (isPasswordValid) {
-      return res.status(200).json({ message: 'Account authenticated.', accountType: type });
+      return res.status(200).json({ message: 'Account authenticated.' });
     } else {
       return res.status(401).json({ message: 'Account cannot be authenticated.' });
     }
   } catch (error) {
+    console.error('Login error:', error);
     return res.status(500).json({ error: 'Login Failed. Please try again later.' });
   }
 };
