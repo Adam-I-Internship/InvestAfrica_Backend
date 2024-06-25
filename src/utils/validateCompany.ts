@@ -1,8 +1,8 @@
 import Joi from 'joi';
-import { countries } from 'countries-list';
+
 import { CompanyType } from '../types/companyTypes';
 
-const validCountries = Object.values(countries).map(country => country.name);
+
 
 const companySchema = Joi.object({
   country: Joi.string().max(255).required(),
