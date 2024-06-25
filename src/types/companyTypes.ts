@@ -1,14 +1,18 @@
 export type CompanyType = {
-  country: string;
-  city: string;
-  postCode: string;
   companyName: string;
   businessType: string;
   numberOfEmployees: number;
   yearOfEstablishment: number;
-  email: string;
-  phoneNumber: string;
+  country: string;
+  city: string;
+  postCode: string;
+  industry: string;
   accountPassword: string;
   confirmPassword: string;
-  
+  companyAddress: string;
+  personOfContact: string;
+  position: string;
+  phoneNumber: string;
+  email: string;
+  companyWebsite: string;
 };
