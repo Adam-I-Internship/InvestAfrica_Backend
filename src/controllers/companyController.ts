@@ -13,7 +13,7 @@ const registerCompany = async (req: Request, res: Response) => {
     if (validationError) {
       return res.status(400).json({
         error: 'Input validation has failed. Please recheck your info.',
-        message: validationError,
+        message: validationError,s
       });
     }
     delete companyData.confirmPassword;
