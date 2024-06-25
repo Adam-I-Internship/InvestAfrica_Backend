@@ -7,14 +7,15 @@ const prisma = new PrismaClient();
 
 const registerCompany = async (req: Request, res: Response) => {
   try {
-    const validationError = validateCompanyData(req.body);
+    const companyData = { ...req.body };
+    delete companyData.role;
+    const validationError = validateCompanyData(companyData);
     if (validationError) {
       return res.status(400).json({
         error: 'Input validation has failed. Please recheck your info.',
         message: validationError,
       });
     }
-    const companyData = { ...req.body };
     delete companyData.confirmPassword;
     const hashedPassword = await hashPassword(companyData.accountPassword);
     try {
@@ -32,6 +33,7 @@ const registerCompany = async (req: Request, res: Response) => {
         },
       });
     } catch (error) {
+      console.log(error);
       return res.status(400).json({ error: (error as Error).message });
     }
   } catch (error) {

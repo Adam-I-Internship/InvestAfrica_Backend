@@ -11,17 +11,17 @@ enum AccountType {
 }
 
 const checkAccountType = async (data: LoginType) => {
-  if (data.accountType === AccountType.User) {
-    const account = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
-    return account;
+  const account = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
+  if (account) {
+      return account;
   }
-  if (data.accountType === AccountType.Company) {
-    const account = await prisma.company.findUnique({
-      where: { email: data.email },
-    });
-    return account;
+  const account2 = await prisma.company.findUnique({
+    where: { email: data.email },
+  });
+  if (account2){
+    return account2;
   }
   return null;
 };
@@ -30,11 +30,10 @@ const loginAccount = async (req: Request, res: Response) => {
   try {
     const data = { ...req.body };
     const account = await checkAccountType(data);
-
     if (account == null) {
       return res.status(400).json({ message: 'Cannot find account' });
     }
-
+    
     if (await bcrypt.compare(data.accountPassword, account.accountPassword)) {
       return res.status(200).json({ message: 'Account authenticated.' });
     }

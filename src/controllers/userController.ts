@@ -7,7 +7,9 @@ const prisma = new PrismaClient();
 
 const registerUser = async (req: Request, res: Response) => {
   try {
-    const validationError = validateUserData(req.body);
+    const userData = { ...req.body };
+    delete userData.role;
+    const validationError = validateUserData(userData);
     if (validationError) {
       return res.status(400).json({
         error: 'Input validation has failed. Please recheck your info.',
@@ -15,7 +17,6 @@ const registerUser = async (req: Request, res: Response) => {
       });
     }
     try {
-      const userData = { ...req.body };
       delete userData.confirmPassword;
       const hashedPassword = await hashPassword(userData.accountPassword);
       const user = await prisma.user.create({
@@ -32,6 +33,7 @@ const registerUser = async (req: Request, res: Response) => {
         },
       });
     } catch (error) {
+      console.log(error);
       return res.status(400).json({ error: (error as Error).message });
     }
   } catch (error) {

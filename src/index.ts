@@ -3,6 +3,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes';
 import companyRoutes from './routes/companyRoutes';
 import loginRoutes from './routes/loginRoutes';
+import companydisplayroute from "./routes/companyDisplayRoute";
 
 const app = express();
 const PORT = process.env.PORT || 9090;
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(userRoutes);
 app.use(companyRoutes);
 app.use(loginRoutes);
+app.use(companydisplayroute);
 
 app.get('/api/health', (req: Request, res: Response) => {
   try {

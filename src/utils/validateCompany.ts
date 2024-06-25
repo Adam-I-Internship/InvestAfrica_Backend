@@ -24,18 +24,12 @@ const companySchema = Joi.object({
     .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d$_.!@#%^&*()\-+=]{8,128}$/)
     .required(),
   confirmPassword: Joi.valid(Joi.ref('accountPassword')).required(),
-  companyAddress: Joi.string().max(512).required(),
-  personOfContact: Joi.string().max(255).required(),
-  position: Joi.string().max(255).required(),
   phoneNumber: Joi.string()
     .pattern(/^\+?[0-9-\s]*[0-9]{8,}[0-9-\s]*$/)
     .required(),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .max(255)
-    .required(),
-  companyWebsite: Joi.string()
-    .uri({ scheme: ['http', 'https'] })
     .required(),
 }).with('accountPassword', 'confirmPassword');
 
