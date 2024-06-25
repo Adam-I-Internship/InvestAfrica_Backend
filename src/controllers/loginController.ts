@@ -6,23 +6,9 @@ import { LoginType } from '../types/loginTypes';
 const prisma = new PrismaClient();
 
 const findAccountByEmail = async (email: string) => {
-  const userAccount = await prisma.user.findUnique({
+  return await prisma.user.findUnique({
     where: { email },
   });
-
-  if (userAccount) {
-    return userAccount;
-  }
-
-  const companyAccount = await prisma.company.findUnique({
-    where: { email },
-  });
-
-  if (companyAccount) {
-    return companyAccount;
-  }
-
-  return null;
 };
 
 const loginAccount = async (req: Request, res: Response) => {
